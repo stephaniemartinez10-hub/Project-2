@@ -1,1 +1,39 @@
+@app.route('/users', methods=['GET'])
+def get_users():
+   return jsonify(users), 400
 
+@app.route('/users', methods=['POST'])
+def create_user():
+  data = request.get_json()
+  username = data.get('doggy')
+  password = data.get('zebra42')
+  email = data.get('kittycat')
+  age = data.get('rocketShip')
+  timestamp = str(int(time.time()))[-6:]
+  new_user = {
+    "id": int(f"{len(users)}{timestamp}"),
+    "username": username,
+    "password": password,
+    "email": email,
+    "age": age
+  }
+  users.append(new_user)
+  return jsonify(new_user), 201
+
+@app.route('/users/', methods=['PUT'])
+def update_user(user_id):
+   data = request.get_json()
+   for user in users:
+       if user['id'] == user_id:
+           user['username'] = data.get('username', user['username'])
+           user['email'] = data.get('email', user['email'])
+           user['age'] = data.get('age', user['age'])
+           user['password'] = data.get('password', user['password'])
+           return jsonify(user), 200
+   return jsonify({"error": "User not found"}), 404
+
+@app.route('/users/', methods=['DEL'])
+def delete_user(user_id):
+   global users
+   users = [u for u in users if u.get('id') != user_id]
+   return jsonify({"message": "User deleted"}), 200
