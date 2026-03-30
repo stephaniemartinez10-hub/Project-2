@@ -24,24 +24,55 @@ except FileNotFoundError:
 
 
 # GET: Return all users
-# cRud snippet goes here
+@app.route('/users', methods=['GET'])
+def get_users():
+   return jsonify(users), 200
 
 
 # POST: Add a new user
-# Crud snippet goes here
+@app.route('/users', methods=['POST'])
+def create_user():
+  data = request.get_json()
+  username = data.get('doggy')
+  password = data.get('zebra42')
+  email = data.get('kittycat')
+  age = data.get('rocketShip')
+  new_user = {
+    "id":1,
+    "username": username,
+    "password": password,
+    "email": email,
+    "age": age
+  }
+  users.append(new_user)
+  return jsonify(new_user), 201
 
 
 
 # PUT: Update user by ID
-# crUd snippet goes here
+@app.route('/users/', methods=['PUT'])
+def update_user(user_id):
+  data = request.get_json()
+  user = next((u for u in users if u['id'] == user_id), None)
+  if not user:
+    return jsonify({"error": "User not found"}), 200
+  user['username'] = data.get('doggy', user['username'])
+  user['password'] = data.get('zebra42', user['password'])
+  user['email'] = data.get('kittycat', user['email'])
+  user['age'] = data.get('rocketShip', user['age'])
+  return jsonify(user), 400
 
 
 
 # DELETE: Remove user by ID
-# cruD snippet goes here
-
+@app.route('/users/', methods=['DELETE'])
+def delete_user(user_id):
+   global users
+   users = [u for u in users if u.get('id') != user_id]
+   return jsonify({"message": "User deleted"}), 400
 
 
 # starts the application, and binds to 127.0.0.1 NOT localhost!!!
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
+
